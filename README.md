@@ -20,6 +20,7 @@ notify-send<br/>
 
 To install it:
 ==============
+$ chmod +x ./bigt
 $ sudo cp ./bigt /usr/bin/bigt
 
 Usage:
