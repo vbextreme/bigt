@@ -1,0 +1,129 @@
+#!/bin/bash
+################################
+# Bash notIfy Google Translate #
+########################################################################
+# bigt                                                                 #
+#                                                                      #
+# Copyright 2015 vbextreme <@>                                         #
+#                                                                      #
+# This program is free software; you can redistribute it and/or modify #
+# it under the terms of the GNU General Public License as published by #
+# the Free Software Foundation; either version 2 of the License, or    #
+# (at your option) any later version.                                  #
+#                                                                      #
+# This program is distributed in the hope that it will be useful,      #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        #
+# GNU General Public License for more details.                         #
+#                                                                      #
+# You should have received a copy of the GNU General Public License    #
+# along with this program; if not, write to the Free Software          #
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,           #
+# MA 02110-1301, USA.                                                  #
+#                                                                      #
+########################################################################
+#																	   #
+# Install:           												   #
+# $ sudo cp ./bigt /usr/bin/bigt									   #
+#																	   #
+########################################################################
+ 
+function Col(){
+	if [ $1 -eq 0 ]; then
+		echo -e "\033[m"
+	else
+		echo -e "\033[$1m"
+	fi
+}
+
+function OptU(){
+	printf "%s\033[93m%s%s\033[m%s " "-" "-" ${1:0:1} ${1:1}
+}
+
+function Usage(){
+	printf "%s" "Usage: "
+	OptU "help"
+	OptU "dstlang"
+	OptU "srclang"
+	OptU "text"
+	OptU "notify"
+	OptU "xsel"
+	printf "\n"
+}
+
+function LHelp(){
+	echo -e "\033[97m$1 \033[92m# $2"
+}
+
+function Help(){
+	Col 97
+	echo "Help:"
+	LHelp "bigt -t \"testo\"" "srclang = auto, destlang = auto"
+	LHelp "bigt -d en -t \"testo\"" "srclang = auto, destlang = en"
+	LHelp "bigt -d en -s it -t \"testo\"" "srclang = it, destlang = en"
+	LHelp "bigt -t \"testo\" -n" "notify display"
+	LHelp "bigt -x" "si può usare -x per la clipboard al posto di -t"
+	Col 0
+}
+	
+
+if [ $# -eq 0 ]; then
+	Usage
+	exit 0
+fi
+
+sla="auto"
+dla="auto"
+ino=0
+xse=0
+tex=""
+
+while [[ $# != 0 ]]; do
+	te="$1"
+	case $te in
+		-h|--help)
+			Help
+			exit 0
+		;;
+		-n|--notify)
+			ino=1
+		;;
+		-x|--xsel)
+			xse=1
+		;;
+		-t|--text)
+			tex="$2"
+			shift
+		;;
+		-s|--srclang)
+			sla="$2"
+			shift
+		;;
+		-d|--dstlang)
+			dla="$2"
+			shift
+		;;
+		*)
+			Usage
+			exit 0
+		;;
+	esac
+	shift
+done
+
+res="ciao"
+
+if [ $xse -eq 1 ]; then
+	tex=$(xsel -o)
+fi
+
+brw="Mozilla/5.0 (X11; U; Linux i686; en-US;rv:1.7.2) Gecko/20040803"
+url="http://translate.google.com.br/translate_a/t?client=t&hl=en&sl=$sla&tl=$dla&otf=2&multires=1&ssel=0&tsel=0&sc=1"
+res=$(curl --data-urlencode "text=$tex" -A $brw -s -g -4 $url | sed -n -e "s/^\[\[\[\"\([A-Za-z ]*\).*/\1/p")
+
+if [ $ino -eq 0 ]; then
+	echo "$res"
+else
+	notify-send -t 0 -u critical "$res"
+fi
+
