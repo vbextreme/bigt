@@ -25,7 +25,4 @@ $ sudo cp ./bigt /usr/bin/bigt
 
 Usage:
 ======
-view usage<br/>
-$ bigt<br/>
-view help<br/>
-$ bigt -h
+View wiki page
