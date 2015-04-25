@@ -20,12 +20,12 @@ notify-send<br/>
 
 To install it:
 ==============
-$ chmod +x ./bigt
+$ chmod +x ./bigt<br/>
 $ sudo cp ./bigt /usr/bin/bigt
 
 Usage:
 ======
-view usage
-$ bigt
-view help
+view usage<br/>
+$ bigt<br/>
+view help<br/>
 $ bigt -h
